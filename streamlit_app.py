@@ -467,6 +467,7 @@ def main():
         * **Pandas:** For data manipulation and analysis.
         * **Matplotlib & Seaborn:** For static data visualization.
         * **Streamlit:** For building the interactive web application/dashboard.
+        """)
 
         st.markdown("---")
         st.write("Developed for the 5011CEM Big Data Programming Project.")
