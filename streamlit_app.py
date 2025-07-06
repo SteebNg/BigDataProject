@@ -119,6 +119,18 @@ def plot_incidence_over_time(df, title):
     plt.tight_layout()
     return fig
 
+# To visualize the total number of cases for each disease category across all years and states
+def plot_overall_cases_by_category(df, title):
+    fig, ax = plt.subplots(figsize=(10, 6))
+    sns.barplot(data=df, x='disease_category', y='total_cases', palette='viridis', ax=ax)
+    ax.set_title(title)
+    ax.set_xlabel('Disease Category')
+    ax.set_ylabel('Total Cases (Sum)')
+    ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha='right')
+    ax.grid(axis='y', linestyle='--', alpha=0.6)
+    plt.tight_layout()
+    return fig
+
 # To visualize the total cases of a specific disease category across different states
 def plot_cases_by_state_for_category(df, category, title):
     filtered_df = df[df['disease_category'] == category].sort_values(by='total_cases', ascending=False)
