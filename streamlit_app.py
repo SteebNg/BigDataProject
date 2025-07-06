@@ -11,7 +11,7 @@ DATASET_PATH = 'std_state.csv'
 OUTPUT_DIR = 'temp_streamlit_plots/'
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
-# This is a critical research component for your assignment.
+# Refined Disease Categories
 DISEASE_CATEGORIES = {
     'chancroid': 'Chancroid',
     'gonorrhea': 'Gonorrhea',
