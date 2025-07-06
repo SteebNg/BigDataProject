@@ -12,8 +12,7 @@ OUTPUT_DIR = 'temp_streamlit_plots/'
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 
-# Refined Disease Categories (YOU MUST VERIFY AND JUSTIFY THESE IN YOUR REPORT!)
-# This is a critical research component for your assignment.
+# Refined Disease Categories
 DISEASE_CATEGORIES = {
     'chancroid': 'Chancroid',
     'gonorrhea': 'Gonorrhea',
