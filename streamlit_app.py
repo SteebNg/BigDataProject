@@ -106,6 +106,31 @@ def main():
 
         st.markdown("---")
 
+        # Cases Over Time for Top Categories (Interactive)
+        st.subheader("Disease Cases Over Time")
+        st.write("Select disease categories to compare their total cases over the years.")
+        unique_categories = sorted(processed_df['disease_category'].unique())
+        selected_categories_time = st.multiselect(
+            "Select Disease Categories for Time Trend:",
+            options=unique_categories,
+            default=unique_categories[0] if unique_categories else []  # Default to first category if available
+        )
+
+        if selected_categories_time:
+            filtered_time_df = yearly_category_trends[
+                yearly_category_trends['disease_category'].isin(selected_categories_time)]
+            fig_cases_time = plot_cases_over_time(filtered_time_df,
+                                                  'Selected Disease Categories: Total Cases Over Time')
+            st.pyplot(fig_cases_time)
+            st.markdown(f"""
+                <p style='font-size: small; text-align: center;'>
+                This graph shows the trend of total cases for the selected disease categories over the years.
+                Observe if cases are increasing, decreasing, or remaining stable.
+                </p>
+                """, unsafe_allow_html=True)
+        else:
+            st.info("Please select at least one disease category to view its trend over time.")
+
 if __name__ == "__main__":
     sns.set_style("whitegrid")
     # Set a larger default font size for plots
