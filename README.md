@@ -7,7 +7,7 @@ This project is an interactive Streamlit dashboard designed for the **5011CEM Bi
 The dashboard offers a user-friendly interface to:
 * **Analyze Historical Disease Trends:** Visualize total cases and incidence rates of various disease categories over time (2017-2021).
 * **Identify Geographical Hotspots:** Pinpoint states with higher disease burdens for specific categories.
-* **Forecast Future Trends:** Utilize a Machine Learning model (Prophet or Linear Regression) to predict future disease cases for selected categories.
+* **Forecast Future Trends:** Utilize a Machine Learning model Linear Regression) to predict future disease cases for selected categories.
 * **Explore Raw Data:** Provide an interface to view the raw and processed datasets.
 
 ## Features
