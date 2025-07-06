@@ -69,3 +69,25 @@ def preprocess_data(df):
         df_processed.loc[df_processed['incidence'] < 0, 'incidence'] = 0
 
     return df_processed
+
+# --- 2. Data Analysis Functions ---
+@st.cache_data
+def get_yearly_category_trends(df):
+    return df.groupby(['year', 'disease_category']).agg(
+        total_cases=('cases', 'sum'),
+        average_incidence=('incidence', 'mean')
+    ).reset_index()
+
+@st.cache_data
+def get_state_category_trends(df):
+    return df.groupby(['state', 'disease_category']).agg(
+        total_cases=('cases', 'sum'),
+        average_incidence=('incidence', 'mean')
+    ).reset_index()
+
+@st.cache_data
+def get_overall_category_summary(df):
+    return df.groupby('disease_category').agg(
+        total_cases=('cases', 'sum'),
+        avg_incidence=('incidence', 'mean')
+    ).sort_values(by='total_cases', ascending=False).reset_index()
