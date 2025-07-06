@@ -20,147 +20,6 @@ DISEASE_CATEGORIES = {
     'aids': 'Aids'
 }
 
-# --- Main Streamlit App Structure ---
-def main():
-    st.set_page_config(
-        page_title="Disease Trends in Malaysia",
-        page_icon="🏥",
-        layout="wide",
-        initial_sidebar_state="expanded"
-    )
-
-    # --- Header and Introduction ---
-    st.image("INTI_Logo.png")
-
-    st.title("🇲🇾 Healthcare Data Insights: Disease Trends in Malaysia")
-    st.markdown("""
-    This interactive dashboard, developed for the **5011CEM Big Data Programming Project**,
-    provides insights into disease patterns and prevalence in Malaysia.
-    Leveraging Big Data principles, it categorizes diseases, analyzes their trends over time (2017-2021),
-    and highlights geographical areas with higher disease prevalence.
-    """)
-
-    st.markdown("---")
-
-    # --- Sidebar for Navigation and Filters ---
-    st.sidebar.header("Navigation & Filters")
-    analysis_options = [
-        "Dashboard Overview",
-        "Disease Category Trends",
-        "Geographical Analysis",
-        "Predictive Analysis",
-        "Data Explorer",
-        "About This Project"
-    ]
-    selected_analysis = st.sidebar.radio("Go to:", analysis_options)
-
-    # --- Data Loading and Preprocessing ---
-    # Perform these steps once and cache the results
-    with st.spinner('Loading and pre-processing data...'):
-        df_raw = load_data(DATASET_PATH)
-        processed_df = preprocess_data(df_raw)
-        yearly_category_trends = get_yearly_category_trends(processed_df)
-        state_category_trends = get_state_category_trends(processed_df)
-        overall_category_summary = get_overall_category_summary(processed_df)
-    st.sidebar.success("Data Ready!")
-
-    # --- Dashboard Overview Section ---
-    if selected_analysis == "Dashboard Overview":
-        st.header("Dashboard Overview: Key Insights at a Glance")
-        st.write("A summary of the most critical findings from the disease data.")
-
-        # Display KPIs
-        total_cases = processed_df['cases'].sum()
-        num_diseases = processed_df['disease'].nunique()
-        num_categories = processed_df['disease_category'].nunique()
-        num_states = processed_df['state'].nunique()
-        reporting_years = processed_df['year'].unique()
-        min_year, max_year = min(reporting_years), max(reporting_years)
-
-        col1, col2, col3, col4, col5 = st.columns(5)
-        with col1:
-            st.metric(label="Total Recorded Cases (2017-2021)", value=f"{total_cases:,}")
-        with col2:
-            st.metric(label="Unique Diseases Tracked", value=num_diseases)
-        with col3:
-            st.metric(label="Disease Categories", value=num_categories)
-        with col4:
-            st.metric(label="States Covered", value=num_states)
-        with col5:
-            st.metric(label="Analysis Period", value=f"{min_year}-{max_year}")
-
-        st.markdown("---")
-
-        # Top Disease Categories Bar Chart
-        st.subheader("Overall Top Disease Categories by Total Cases")
-        fig_overall_cases = plot_overall_cases_by_category(overall_category_summary,
-                                                           'Overall Total Cases by Disease Category')
-        st.pyplot(fig_overall_cases)
-        st.markdown(f"""
-            <p style='font-size: small; text-align: center;'>
-            The chart above illustrates the aggregated number of cases for each disease category across all states and years.
-            It helps to quickly identify which disease categories have historically had the highest burden in Malaysia.
-            </p>
-            """, unsafe_allow_html=True)
-
-        st.markdown("---")
-
-        # Cases Over Time for Top Categories (Interactive)
-        st.subheader("Disease Cases Over Time")
-        st.write("Select disease categories to compare their total cases over the years.")
-        unique_categories = sorted(processed_df['disease_category'].unique())
-        selected_categories_time = st.multiselect(
-            "Select Disease Categories for Time Trend:",
-            options=unique_categories,
-            default=unique_categories[0] if unique_categories else []  # Default to first category if available
-        )
-
-        if selected_categories_time:
-            filtered_time_df = yearly_category_trends[
-                yearly_category_trends['disease_category'].isin(selected_categories_time)]
-            fig_cases_time = plot_cases_over_time(filtered_time_df,
-                                                  'Selected Disease Categories: Total Cases Over Time')
-            st.pyplot(fig_cases_time)
-            st.markdown(f"""
-                <p style='font-size: small; text-align: center;'>
-                This graph shows the trend of total cases for the selected disease categories over the years.
-                Observe if cases are increasing, decreasing, or remaining stable.
-                </p>
-                """, unsafe_allow_html=True)
-        else:
-            st.info("Please select at least one disease category to view its trend over time.")
-
-# --- Machine Learning Functions (Linear Regression Forecasting) ---
-@st.cache_resource # Use st.cache_resource for models
-def train_linear_regression_model(df_filtered):
-    """
-    Trains a Linear Regression model for forecasting.
-    df_filtered must contain 'year' and 'total_cases'.
-    """
-    if df_filtered.empty or len(df_filtered) < 2:
-        return None, "Not enough data points for linear regression (at least 2 required)."
-
-    X = df_filtered[['year']]
-    y = df_filtered['total_cases']
-
-    model = LinearRegression()
-    model.fit(X, y)
-    return model, None
-
-def make_linear_regression_forecast(model, last_year, years_to_forecast):
-    """
-    Generates future dates and makes predictions using a trained Linear Regression model.
-    """
-    future_years = np.array(range(last_year + 1, last_year + 1 + years_to_forecast)).reshape(-1, 1)
-    forecasted_cases = model.predict(future_years)
-
-    # Create a DataFrame for display
-    forecast_df = pd.DataFrame({
-        'Year': future_years.flatten(),
-        'Predicted Total Cases': forecasted_cases
-    })
-    return forecast_df
-
 # --- 1. Data Loading and Initial Pre-processing ---
 @st.cache_data # Cache this function to run only once for efficiency
 def load_data(filepath):
@@ -288,19 +147,152 @@ def plot_cases_by_state_for_category(df, category, title):
     plt.tight_layout()
     return fig, None
 
-if __name__ == "__main__":
-    sns.set_style("whitegrid")
-    # Set a larger default font size for plots
-    plt.rcParams.update({'font.size': 10})
-    plt.rcParams['axes.titlesize'] = 14
-    plt.rcParams['axes.labelsize'] = 12
-    plt.rcParams['xtick.labelsize'] = 10
-    plt.rcParams['ytick.labelsize'] = 10
-    plt.rcParams['legend.fontsize'] = 10
-    plt.rcParams['figure.dpi'] = 100 # Adjust for better resolution if needed
+# --- 4. Machine Learning Functions (Linear Regression Forecasting) ---
+@st.cache_resource # Use st.cache_resource for models
+def train_linear_regression_model(df_filtered):
+    """
+    Trains a Linear Regression model for forecasting.
+    df_filtered must contain 'year' and 'total_cases'.
+    """
+    if df_filtered.empty or len(df_filtered) < 2:
+        return None, "Not enough data points for linear regression (at least 2 required)."
 
-    main()
+    X = df_filtered[['year']]
+    y = df_filtered['total_cases']
 
+    model = LinearRegression()
+    model.fit(X, y)
+    return model, None
+
+def make_linear_regression_forecast(model, last_year, years_to_forecast):
+    """
+    Generates future dates and makes predictions using a trained Linear Regression model.
+    """
+    future_years = np.array(range(last_year + 1, last_year + 1 + years_to_forecast)).reshape(-1, 1)
+    forecasted_cases = model.predict(future_years)
+
+    # Create a DataFrame for display
+    forecast_df = pd.DataFrame({
+        'Year': future_years.flatten(),
+        'Predicted Total Cases': forecasted_cases
+    })
+    return forecast_df
+
+# --- Main Streamlit App Structure ---
+def main():
+    st.set_page_config(
+        page_title="Disease Trends in Malaysia",
+        page_icon="🏥",
+        layout="wide",
+        initial_sidebar_state="expanded"
+    )
+
+    # --- Header and Introduction ---
+    st.image("INTI_Logo.png")
+
+    st.title("🇲🇾 Healthcare Data Insights: Disease Trends in Malaysia")
+    st.markdown("""
+    This interactive dashboard, developed for the **5011CEM Big Data Programming Project**,
+    provides insights into disease patterns and prevalence in Malaysia.
+    Leveraging Big Data principles, it categorizes diseases, analyzes their trends over time (2017-2021),
+    and highlights geographical areas with higher disease prevalence.
+    """)
+
+    st.markdown("---")
+
+    # --- Sidebar for Navigation and Filters ---
+    st.sidebar.header("Navigation & Filters")
+    analysis_options = [
+        "Dashboard Overview",
+        "Disease Category Trends",
+        "Geographical Analysis",
+        "Predictive Analysis",
+        "Data Explorer",
+        "About This Project"
+    ]
+    selected_analysis = st.sidebar.radio("Go to:", analysis_options)
+
+    # --- Data Loading and Preprocessing ---
+    # Perform these steps once and cache the results
+    with st.spinner('Loading and pre-processing data...'):
+        df_raw = load_data(DATASET_PATH)
+        processed_df = preprocess_data(df_raw)
+        yearly_category_trends = get_yearly_category_trends(processed_df)
+        state_category_trends = get_state_category_trends(processed_df)
+        overall_category_summary = get_overall_category_summary(processed_df)
+    st.sidebar.success("Data Ready!")
+
+    # --- Dashboard Overview Section ---
+    if selected_analysis == "Dashboard Overview":
+        st.header("Dashboard Overview: Key Insights at a Glance")
+        st.write("A summary of the most critical findings from the disease data.")
+
+        # Display KPIs
+        total_cases = processed_df['cases'].sum()
+        num_diseases = processed_df['disease'].nunique()
+        num_categories = processed_df['disease_category'].nunique()
+        num_states = processed_df['state'].nunique()
+        reporting_years = processed_df['year'].unique()
+        min_year, max_year = min(reporting_years), max(reporting_years)
+
+        col1, col2, col3, col4, col5 = st.columns(5)
+        with col1:
+            st.metric(label="Total Recorded Cases (2017-2021)", value=f"{total_cases:,}")
+        with col2:
+            st.metric(label="Unique Diseases Tracked", value=num_diseases)
+        with col3:
+            st.metric(label="Disease Categories", value=num_categories)
+        with col4:
+            st.metric(label="States Covered", value=num_states)
+        with col5:
+            st.metric(label="Analysis Period", value=f"{min_year}-{max_year}")
+
+        st.markdown("---")
+
+        # Top Disease Categories Bar Chart
+        st.subheader("Overall Top Disease Categories by Total Cases")
+        fig_overall_cases = plot_overall_cases_by_category(overall_category_summary,
+                                                           'Overall Total Cases by Disease Category')
+        st.pyplot(fig_overall_cases)
+        st.markdown(f"""
+            <p style='font-size: small; text-align: center;'>
+            The chart above illustrates the aggregated number of cases for each disease category across all states and years.
+            It helps to quickly identify which disease categories have historically had the highest burden in Malaysia.
+            </p>
+            """, unsafe_allow_html=True)
+
+        st.markdown("---")
+
+        # Cases Over Time for Top Categories (Interactive)
+        st.subheader("Disease Cases Over Time")
+        st.write("Select disease categories to compare their total cases over the years.")
+        unique_categories = sorted(processed_df['disease_category'].unique())
+        selected_categories_time = st.multiselect(
+            "Select Disease Categories for Time Trend:",
+            options=unique_categories,
+            default=unique_categories[0] if unique_categories else []  # Default to first category if available
+        )
+
+        if selected_categories_time:
+            filtered_time_df = yearly_category_trends[
+                yearly_category_trends['disease_category'].isin(selected_categories_time)]
+            fig_cases_time = plot_cases_over_time(filtered_time_df,
+                                                  'Selected Disease Categories: Total Cases Over Time')
+            st.pyplot(fig_cases_time)
+            st.markdown(f"""
+                <p style='font-size: small; text-align: center;'>
+                This graph shows the trend of total cases for the selected disease categories over the years.
+                Observe if cases are increasing, decreasing, or remaining stable.
+                </p>
+                """, unsafe_allow_html=True)
+        else:
+            st.info("Please select at least one disease category to view its trend over time.")
+
+
+#KOK LIANG PART (Disease Category Trends Section)
+
+
+# --- Geographical Analysis Section ---
 elif selected_analysis == "Geographical Analysis":
         st.header("Geographical Analysis: High-Risk States")
         st.write("Identify states with higher total cases or incidence for specific disease categories.")
@@ -324,6 +316,9 @@ elif selected_analysis == "Geographical Analysis":
                 """, unsafe_allow_html=True)
             else:
                 st.info(msg)
+
+#KOK LIANG PART (Predictive Analysis)
+
 
 # --- Data Explorer Section ---
     elif selected_analysis == "Data Explorer":
@@ -379,7 +374,6 @@ elif selected_analysis == "Geographical Analysis":
         * **Pandas:** For efficient data manipulation and analysis.
         * **Matplotlib & Seaborn:** For static and informative data visualization.
         * **Streamlit:** For building the interactive web application/dashboard.
-        * **Prophet (Meta/Facebook):** For time series forecasting. *(Remove this line if you are only using Linear Regression)*
         * **Scikit-learn:** For machine learning algorithms, specifically Linear Regression. *(Add this line if you are using Linear Regression, or keep both if you compare them)*
 
         ### Future Enhancements & Key Discussion Points for Report
