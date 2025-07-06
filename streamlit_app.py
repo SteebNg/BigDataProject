@@ -38,6 +38,20 @@ def train_linear_regression_model(df_filtered):
     model.fit(X, y)
     return model, None
 
+def make_linear_regression_forecast(model, last_year, years_to_forecast):
+    """
+    Generates future dates and makes predictions using a trained Linear Regression model.
+    """
+    future_years = np.array(range(last_year + 1, last_year + 1 + years_to_forecast)).reshape(-1, 1)
+    forecasted_cases = model.predict(future_years)
+
+    # Create a DataFrame for display
+    forecast_df = pd.DataFrame({
+        'Year': future_years.flatten(),
+        'Predicted Total Cases': forecasted_cases
+    })
+    return forecast_df
+
 if __name__ == "__main__":
     sns.set_style("whitegrid")
     # Set a larger default font size for plots
