@@ -65,6 +65,47 @@ def main():
         overall_category_summary = get_overall_category_summary(processed_df)
     st.sidebar.success("Data Ready!")
 
+    # --- Dashboard Overview Section ---
+    if selected_analysis == "Dashboard Overview":
+        st.header("Dashboard Overview: Key Insights at a Glance")
+        st.write("A summary of the most critical findings from the disease data.")
+
+        # Display KPIs
+        total_cases = processed_df['cases'].sum()
+        num_diseases = processed_df['disease'].nunique()
+        num_categories = processed_df['disease_category'].nunique()
+        num_states = processed_df['state'].nunique()
+        reporting_years = processed_df['year'].unique()
+        min_year, max_year = min(reporting_years), max(reporting_years)
+
+        col1, col2, col3, col4, col5 = st.columns(5)
+        with col1:
+            st.metric(label="Total Recorded Cases (2017-2021)", value=f"{total_cases:,}")
+        with col2:
+            st.metric(label="Unique Diseases Tracked", value=num_diseases)
+        with col3:
+            st.metric(label="Disease Categories", value=num_categories)
+        with col4:
+            st.metric(label="States Covered", value=num_states)
+        with col5:
+            st.metric(label="Analysis Period", value=f"{min_year}-{max_year}")
+
+        st.markdown("---")
+
+        # Top Disease Categories Bar Chart
+        st.subheader("Overall Top Disease Categories by Total Cases")
+        fig_overall_cases = plot_overall_cases_by_category(overall_category_summary,
+                                                           'Overall Total Cases by Disease Category')
+        st.pyplot(fig_overall_cases)
+        st.markdown(f"""
+            <p style='font-size: small; text-align: center;'>
+            The chart above illustrates the aggregated number of cases for each disease category across all states and years.
+            It helps to quickly identify which disease categories have historically had the highest burden in Malaysia.
+            </p>
+            """, unsafe_allow_html=True)
+
+        st.markdown("---")
+
 if __name__ == "__main__":
     sns.set_style("whitegrid")
     # Set a larger default font size for plots
