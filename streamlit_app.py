@@ -205,7 +205,7 @@ def main():
     )
 
     # --- Header and Introduction ---
-    st.image("INTI_Logo.png")
+    st.image("INTI_Logo.png", width = 700)
 
     st.title("🇲🇾 Healthcare Data Insights: Disease Trends in Malaysia")
     st.markdown("""
