@@ -11,7 +11,9 @@ DATASET_PATH = 'std_state.csv'
 OUTPUT_DIR = 'temp_streamlit_plots/'
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
-# Refined Disease Categories
+
+# Refined Disease Categories (YOU MUST VERIFY AND JUSTIFY THESE IN YOUR REPORT!)
+# This is a critical research component for your assignment.
 DISEASE_CATEGORIES = {
     'chancroid': 'Chancroid',
     'gonorrhea': 'Gonorrhea',
@@ -146,3 +148,17 @@ def plot_cases_by_state_for_category(df, category, title):
     ax.grid(axis='y', linestyle='--', alpha=0.6)
     plt.tight_layout()
     return fig, None
+
+if __name__ == "__main__":
+    sns.set_style("whitegrid")
+    # Set a larger default font size for plots
+    plt.rcParams.update({'font.size': 10})
+    plt.rcParams['axes.titlesize'] = 14
+    plt.rcParams['axes.labelsize'] = 12
+    plt.rcParams['xtick.labelsize'] = 10
+    plt.rcParams['ytick.labelsize'] = 10
+    plt.rcParams['legend.fontsize'] = 10
+    plt.rcParams['figure.dpi'] = 100 # Adjust for better resolution if needed
+
+    main()
+
