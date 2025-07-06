@@ -147,6 +147,23 @@ def plot_cases_by_state_for_category(df, category, title):
     plt.tight_layout()
     return fig, None
 
+def plot_heatmap_cases_by_state_and_disease(df, title):
+    pivot_table = df.pivot_table(
+        values="cases",
+        index="state",
+        columns="disease_category",
+        aggfunc="sum",
+        fill_value=0
+    )
+    fig, ax = plt.subplots(figsize=(12, 8))
+    sns.heatmap(pivot_table, annot=True, fmt="d", cmap="Reds", ax=ax)
+    ax.set_title(title)
+    ax.set_xlabel("Disease")
+    ax.set_ylabel("State")
+    plt.xticks(rotation=45, ha='right')
+    plt.tight_layout()
+    return fig
+
 # --- 4. Machine Learning Functions (Linear Regression Forecasting) ---
 @st.cache_resource # Use st.cache_resource for models
 def train_linear_regression_model(df_filtered):
@@ -317,6 +334,18 @@ def main():
     elif selected_analysis == "Geographical Analysis":
         st.header("Geographical Analysis: High-Risk States")
         st.write("Identify states with higher total cases or incidence for specific disease categories.")
+
+        st.subheader("Heatmap of STD Cases by State and Disease")
+        fig_heatmap = plot_heatmap_cases_by_state_and_disease(processed_df, "STD Heatmap by State and Disease")
+        st.pyplot(fig_heatmap)
+        st.markdown("""
+                <p style='font-size: small; text-align: center;'>
+                This heatmap provides a comparative view of STD case counts by disease across Malaysian states.
+                Darker shades indicate higher case counts, helping to visually identify which states are most affected by specific diseases.
+                </p>
+                """, unsafe_allow_html=True)
+
+        st.markdown("---")
 
         unique_categories_geo = sorted(state_category_trends['disease_category'].unique())
         selected_category_geo = st.selectbox(
