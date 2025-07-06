@@ -91,3 +91,16 @@ def get_overall_category_summary(df):
         total_cases=('cases', 'sum'),
         avg_incidence=('incidence', 'mean')
     ).sort_values(by='total_cases', ascending=False).reset_index()
+
+# --- 3. Visualization Functions ---
+def plot_cases_over_time(df, title):
+    fig, ax = plt.subplots(figsize=(12, 6))
+    sns.lineplot(data=df, x='year', y='total_cases', hue='disease_category', marker='o', ax=ax)
+    ax.set_title(title)
+    ax.set_xlabel('Year')
+    ax.set_ylabel('Total Cases')
+    ax.set_xticks(df['year'].unique())
+    ax.grid(True, linestyle='--', alpha=0.6)
+    ax.legend(title='Disease Category', bbox_to_anchor=(1.05, 1), loc='upper left')
+    plt.tight_layout()
+    return fig
