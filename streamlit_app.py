@@ -118,3 +118,19 @@ def plot_incidence_over_time(df, title):
     ax.legend(title='Disease Category', bbox_to_anchor=(1.05, 1), loc='upper left')
     plt.tight_layout()
     return fig
+
+# To visualize the total cases of a specific disease category across different states
+def plot_cases_by_state_for_category(df, category, title):
+    filtered_df = df[df['disease_category'] == category].sort_values(by='total_cases', ascending=False)
+    if filtered_df.empty:
+        return None, f"No data for '{category}' to plot by state."
+
+    fig, ax = plt.subplots(figsize=(12, 7))
+    sns.barplot(data=filtered_df, x='state', y='total_cases', palette='plasma', ax=ax)
+    ax.set_title(title)
+    ax.set_xlabel('State')
+    ax.set_ylabel('Total Cases')
+    ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha='right')
+    ax.grid(axis='y', linestyle='--', alpha=0.6)
+    plt.tight_layout()
+    return fig, None
