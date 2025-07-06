@@ -24,7 +24,7 @@ The dashboard offers a user-friendly interface to:
 * **Streamlit:** For creating the interactive web application.
 * **Pandas:** For data manipulation and analysis.
 * **Matplotlib & Seaborn:** For static data visualizations.
-* **Scikit-learn:** (If used, e.g., for Linear Regression) For general machine learning algorithms.
+* **Scikit-learn:** For Linear Regression machine learning algorithms.
 
 ## Setup and Installation
 
@@ -34,7 +34,7 @@ Follow these steps to get the project up and running on your local machine.
 
 * **Python** installed on your system. You can download it from [python.org](https://www.python.org/downloads/).
 * **pip** (Python package installer), which usually comes with Python.
-* **sts_state.csv** and **INTI_Logo.png** installed in the same location as the Python file.
+* **std_state.csv** and **INTI_Logo.png** installed in the same location as the Python file.
 
 ### 2. Clone the Repository (Optional, if you're managing files manually)
 
