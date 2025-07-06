@@ -315,8 +315,8 @@ def main():
         </p>
         """, unsafe_allow_html=True)
 
-# --- Geographical Analysis Section ---
-elif selected_analysis == "Geographical Analysis":
+    # --- Geographical Analysis Section ---
+    elif selected_analysis == "Geographical Analysis":
         st.header("Geographical Analysis: High-Risk States")
         st.write("Identify states with higher total cases or incidence for specific disease categories.")
 
@@ -340,7 +340,7 @@ elif selected_analysis == "Geographical Analysis":
             else:
                 st.info(msg)
 
-# --- Predictive Analysis Section ---
+    # --- Predictive Analysis Section ---
     elif selected_analysis == "Predictive Analysis (ML)":
         st.header("Predictive Analysis: Forecast Future Disease Cases")
         st.write("Utilize a Machine Learning model (Linear Regression) to forecast future total cases for a selected disease category.")
@@ -420,7 +420,7 @@ elif selected_analysis == "Geographical Analysis":
                 st.info(f"No historical data found for '{selected_category_forecast}' to perform a forecast.")
 
 
-# --- Data Explorer Section ---
+    # --- Data Explorer Section ---
     elif selected_analysis == "Data Explorer":
         st.header("Data Explorer")
         st.write("Browse the raw and processed datasets.")
