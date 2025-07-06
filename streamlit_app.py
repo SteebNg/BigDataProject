@@ -11,8 +11,7 @@ DATASET_PATH = 'std_state.csv'
 OUTPUT_DIR = 'temp_streamlit_plots/'
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
-# Refined Disease Categories (YOU MUST VERIFY AND JUSTIFY THESE IN YOUR REPORT!)
-# This is a critical research component for your assignment.
+# Refined Disease Categories
 DISEASE_CATEGORIES = {
     'chancroid': 'Chancroid',
     'gonorrhea': 'Gonorrhea',
@@ -94,6 +93,7 @@ def get_overall_category_summary(df):
     ).sort_values(by='total_cases', ascending=False).reset_index()
 
 # --- 3. Visualization Functions ---
+# To visualize disease trends over time
 def plot_cases_over_time(df, title):
     fig, ax = plt.subplots(figsize=(12, 6))
     sns.lineplot(data=df, x='year', y='total_cases', hue='disease_category', marker='o', ax=ax)
@@ -106,6 +106,7 @@ def plot_cases_over_time(df, title):
     plt.tight_layout()
     return fig
 
+# To visualize the average incidence rates of diseases over time
 def plot_incidence_over_time(df, title):
     fig, ax = plt.subplots(figsize=(12, 6))
     sns.lineplot(data=df, x='year', y='average_incidence', hue='disease_category', marker='o', ax=ax)
@@ -118,6 +119,7 @@ def plot_incidence_over_time(df, title):
     plt.tight_layout()
     return fig
 
+# To visualize the total number of cases for each disease category across all years and states
 def plot_overall_cases_by_category(df, title):
     fig, ax = plt.subplots(figsize=(10, 6))
     sns.barplot(data=df, x='disease_category', y='total_cases', palette='viridis', ax=ax)
@@ -129,6 +131,7 @@ def plot_overall_cases_by_category(df, title):
     plt.tight_layout()
     return fig
 
+# To visualize the total cases of a specific disease category across different states
 def plot_cases_by_state_for_category(df, category, title):
     filtered_df = df[df['disease_category'] == category].sort_values(by='total_cases', ascending=False)
     if filtered_df.empty:
@@ -144,7 +147,7 @@ def plot_cases_by_state_for_category(df, category, title):
     plt.tight_layout()
     return fig, None
 
-# --- NEW: Machine Learning Functions (Linear Regression Forecasting) ---
+# --- 4. Machine Learning Functions (Linear Regression Forecasting) ---
 @st.cache_resource # Use st.cache_resource for models
 def train_linear_regression_model(df_filtered):
     """
@@ -455,7 +458,6 @@ def main():
         ### Key Features
         * **Data Loading & Pre-processing:** Handles raw `.csv` data, converts date formats, and applies custom disease categorization.
         * **Disease Categorization:** Groups similar diseases into broader categories for macro-level analysis.
-            *(Note: The current categorization is illustrative and should be thoroughly researched and justified in your assignment report.)*
         * **Trend Analysis:** Visualizes trends of disease cases and incidence rates over time (2017-2021).
         * **Geographical Hotspot Identification:** Identifies states with higher disease burdens for specific categories.
         * **Interactive Dashboard:** Provides a user-friendly interface to explore data and visualizations.
@@ -466,21 +468,6 @@ def main():
         * **Matplotlib & Seaborn:** For static data visualization.
         * **Streamlit:** For building the interactive web application/dashboard.
 
-        ### Future Enhancements (For Discussion in Report)
-        * Integration of demographic data (age, gender) for more granular risk group analysis.
-        * Implementation of predictive models for future disease outbreaks.
-        * More advanced geospatial visualizations.
-        * Connection to larger, real-time healthcare datasets.
-
-        ### Assignment Guidance Reminder
-        Remember to detail all aspects of this project in your assignment report, including:
-        * Problem Definition & Literature Review
-        * Data Analysis (EDA, Machine Learning Algorithms if applied, Algorithm Complexity)
-        * Professional Practices (Version control, ethics, etc.)
-        * Interpretation of Results
-        * Appropriate Diagrams (DFD, ERD, Flowcharts, UML, Gantt chart)
-        * A critical reflection on your work during the VIVA.
-        """)
         st.markdown("---")
         st.write("Developed for the 5011CEM Big Data Programming Project.")
         st.write(f"Current Date: {pd.to_datetime('today').strftime('%Y-%m-%d')}")
